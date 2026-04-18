@@ -28,6 +28,7 @@ INCLUDE FILES: student.h
 
 /* defines */
 #define TOTAL_SUBJECT  (10)
+#define RANK_ONE       (1)
 
 /* typedefs */
 
@@ -46,7 +47,7 @@ bool studentGetCount(uint32_t* pulCount);
 bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks);
 
 bool studentDeleteByName(uint8_t* pucName);
-bool studentDeleteByRoll(uint32_t ulRoll);
+bool studentDeleteByRoll(uint32_t* ulRoll);
 bool studentDeleteAll(void);
 
 /*******************************************************************************
@@ -253,6 +254,67 @@ bool studentCalcGrades
         }
         return lReturnFlag;
     }
+/*******************************************************************************
+* 
+* studentUpdateRank - Function to update the rank of student in the list
+* 
+* DESCRIPTION
+* The function will update the a student's rank based on the mark
+* 
+* PARAMETERS: N/A
+* 
+* GLOBALS: menuStdntTask
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+bool studentUpdateRank
+    (
+    void
+    )
+    {
+        bool lReturnFlag = true;
+        uint8_t ucInIndex = ZERO_INITIALIZATION;
+        uint8_t ucOutIndex = ZERO_INITIALIZATION;
+        uint32_t uiRank = RANK_ONE;
+        student stTempstudentInfo;
+        for ( ; ucOutIndex < ucStdntCnt ; ucOutIndex++)
+        {
+            for ( ; ucInIndex < ucStdntCnt; ucInIndex)
+            {
+                if (ststudentInfoTable[ucOutIndex].ucMark_sum < 
+                    ststudentInfoTable[ucInIndex].ucMark_sum)
+                {
+                    stTempstudentInfo = ststudentInfoTable[ucOutIndex];
+                    ststudentInfoTable[ucOutIndex] = 
+                        ststudentInfoTable[ucInIndex];
+                    ststudentInfoTable[ucInIndex] = stTempstudentInfo;
+                }
+                
+            }   
+        }
+        ststudentInfoTable[ZERO_INITIALIZATION].ucrank = uiRank;
+        for (ucOutIndex = ZERO_INITIALIZATION; ucOutIndex < ucStdntCnt; 
+            ucOutIndex++)
+        {
+            if (ststudentInfoTable[ucOutIndex].ucMark_sum ==
+                ststudentInfoTable[ucOutIndex].ucMark_sum)
+            {
+                ststudentInfoTable[ucOutIndex].ucrank = uiRank;
+            }
+            else
+            {
+                uiRank = ucOutIndex + RANK_ONE;
+                ststudentInfoTable[ucOutIndex].ucrank = uiRank;
+            }
+            
+        }
+        
+
+        return lReturnFlag;
+    }
 
 /*******************************************************************************
 * 
@@ -339,6 +401,54 @@ bool studentDeleteByName
         }
         return lReturnFlag;
     }
+/*******************************************************************************
+* 
+* studentDeleteByRoll - Function to delete the student record based on roll no:
+* 
+* DESCRIPTION
+* The function will delete the student record from the list based on roll number
+* given by the user
+* 
+* PARAMETERS: ulRoll
+*            
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+bool studentDeleteByRoll
+    (  
+    uint32_t* ulRoll
+    )
+    {
+        uint8_t ucIndex  = ZERO_INITIALIZATION;
+        uint8_t ucDelIndex = ZERO_INITIALIZATION;
+        bool lReturnFlag = true;
+        if (ulRoll != NULL)
+        {
+            for (; ucIndex < ucStdntCnt; ucIndex++)
+            {
+                if (ststudentInfoTable[ucIndex].uiStd_roll == *ulRoll)
+                {
+                    for ( ; ucDelIndex < (ucStdntCnt - 1); ucDelIndex++)
+                    {
+                        ststudentInfoTable[ucDelIndex] =
+                            ststudentInfoTable[ucDelIndex + 1];
+                    }
+                    ucStdntCnt--;    
+                }
+                
+            }
+            
+        }
+        else
+        {
+            lReturnFlag = false;
+        }
+        return lReturnFlag;
+    }
 
 /*******************************************************************************
 * 
@@ -373,6 +483,51 @@ bool studentDeleteAll
             lReturnFlag = false;
         }
         
+        return lReturnFlag;
+    }
+/*******************************************************************************
+* 
+* studentGetAvgMarksOfSubjects - Function to get average mark of students
+* 
+* DESCRIPTION
+* The function will find the average mark of all students 
+* 
+* PARAMETERS: N/A
+*            
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+bool studentGetAvgMarksOfSubjects
+    (  
+    uint8_t* pucAvgMarks
+    )
+    {
+        uint8_t ucIndex = ZERO_INITIALIZATION;
+        uint32_t ulSum = ZERO_INITIALIZATION;
+        bool lReturnFlag = true;
+        if (pucAvgMarks != NULL)
+        {
+            for ( ; ucIndex < ucStdntCnt; ucIndex++)
+            {
+                ulSum += ststudentInfoTable[ucIndex].ucMark_avg;
+            }          
+        }
+        else
+        {
+            lReturnFlag = false;
+        }
+        if (ucStdntCnt != ZERO_INITIALIZATION)
+        {
+            *pucAvgMarks = ((float)ulSum)/((float)ucStdntCnt);
+        }
+        else
+        {
+            lReturnFlag = false;
+        }
         return lReturnFlag;
     }
 

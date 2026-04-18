@@ -22,15 +22,18 @@ INCLUDE FILES: menu.h
 */
 
 /* includes */
-#include "menu.h"
 #include "student.h"
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* defines */
 #define TASK_COUNT          (12)
 #define INPUT_BUFFER        (100)
 #define CHAR_MIN            (0)
 #define CHAR_MAX            (255)
+#define OPTION_ONE          (1)
+#define OPTION_TWO          (2)
+#define OPTION_THREE        (3)
 
 /* typedefs */
 typedef enum
@@ -55,7 +58,7 @@ typedef struct
         OPTION_TYPE eInputOption;
         bool (*pMenuFucnHandler) (void);
     }menuStdntTask;
-float fAvg;
+uint8_t fAvg;
 
 /* locals */
 uint8_t ucinpBuff[INPUT_BUFFER];
@@ -188,7 +191,12 @@ bool menuStudentOverview
     void
     )
     {
+        bool lReturnflag = true;
+        studentGetCount(&ucStdntCnt);
         printf("No: of students = %d\n",ucStdntCnt);
+        studentGetAvgMarksOfSubjects(&fAvg);
+        printf("Average = %d\n",fAvg);
+        return lReturnflag;
     }
 
 /*******************************************************************************
@@ -282,6 +290,9 @@ bool menuAddStudent
         
         studentAdd (ststudentInfo);
         studentCalcAverage (ststudentInfo, &fAvg);
+        studentCalcSum (&ststudentInfo, &ststudentInfo.ucMark_sum);
+        studentCalcGrades (&ststudentInfo, &ststudentInfo.ucMark_sum);
+        studentUpdateRank ();
         ucStdntCnt++;
     }
 
@@ -292,7 +303,7 @@ bool menuAddStudent
 * DESCRIPTION
 * The function calls the corresponding function to display student list
 * 
-* PARAMETERS
+* PARAMETERS:
 * N/A
 * 
 * GLOBALS: N/A
@@ -324,4 +335,235 @@ bool menuListStudent
         {
             printf("Invalid operation\n");
         }
+    }   
+    
+/*******************************************************************************
+* 
+* menuDeleteStudent - Function to delete student record
+* 
+* DESCRIPTION
+* The function is used to delete student record from based on delete student 
+* menu. It provides options to delete menu.
+* 
+* PARAMETERS:
+* N/A
+* 
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+
+bool menuDeleteStudent
+    (
+    void
+    )
+    {
+        printf("Enter the option to delete:\n1. Delete by Name\n
+            2. Delete by Roll no:\n3. Delete all\n");
+        if( fgets (ucinpBuff, sizeof(ucinpBuff), stdin))
+            {
+                uint8_t *pucendptr;
+                uint64_t ulTemp = strtol (ucinpBuff, &pucendptr, 10);
+            }
+
+            if (pucendptr == ucinpBuff)
+            {
+                printf ("Not a valid input\n");
+                lReturnFlag = false;
+            }
+            else if (ulTemp < CHAR_MIN || ulTemp > CHAR_MAX)
+            {
+                printf ("NUmber out of range\n");
+                lReturnFlag = false;
+            }
+            else
+            {
+                ucInpNum = (uint8_t)ulTemp;
+                lReturnFlag = true;
+            }
+            
+            if (STD_OVERVIEW <= ucInpNum <= TASK_COUNT)
+            {
+                for ( ; ucIndex < TASK_COUNT; ucIndex++)
+                {
+                    switch (ucInpNum)
+                    {
+                    case OPTION_ONE:
+                        menuDeleteByName();
+                        break;
+                    case OPTION_TWO:
+                        menuListSortByRoll();
+                        break;
+                    case OPTION_THREE:
+                        menuDeleteAll();
+                        break;
+                    default:
+                        printf("Not a valid input\n");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                lReturnFlag = false;
+            }
+        
     }    
+/*******************************************************************************
+* 
+* menuDeleteByName - Function to delete student record based on Name
+* 
+* DESCRIPTION
+* The function is used to delete student record from based on the name given by
+* the user. 
+* 
+* PARAMETERS:
+* N/A
+* 
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+
+bool menuDeleteByName
+    (
+    void
+    )
+    {
+        bool lReturnFlag = true;
+        student ststudentInfo;
+        printf("Enter the name to delete:\n");
+        if (fgets(ststudentInfo.ucStd_name, 
+            sizeof(ststudentInfo.ucStd_name), stdin) != NULL)
+            {
+                if (ststudentInfo.ucStd_name == '\n' ||
+                    ststudentInfo.ucStd_name == '\0')
+                    {
+                        printf ("Enter valid name\n");
+                        lReturnFlag = false;
+                    }    
+                else   
+                    {
+                        lReturnFlag = true;
+                    }
+        
+            }
+        else
+            {
+                printf ("Unable to read input\n");
+                lReturnFlag = false;
+            }
+        studentDeleteByName (ststudentInfo.ucStd_name);
+        
+    } 
+/*******************************************************************************
+* 
+* menuDeleteByRoll - Function to delete student record based on Roll No:
+* 
+* DESCRIPTION
+* The function is used to delete student record from based on the roll no: given 
+* by the user. 
+* 
+* PARAMETERS:
+* N/A
+* 
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+
+bool menuDeleteByRoll
+    (
+    void
+    )
+    {
+        bool lReturnFlag = true;
+        student ststudentInfo;
+        printf("Enter the number to delete:\n");
+        scanf("%d",&ststudentInfo.uiStd_roll);
+        studentDeleteByRoll (&ststudentInfo.uiStd_roll);
+        return lReturnFlag;
+        
+    }  
+/*******************************************************************************
+* 
+* menuDeleteAll - Function to delete all the student record 
+* 
+* DESCRIPTION
+* The function is used to delete all the student record fromthe structure table
+* 
+* PARAMETERS:
+* N/A
+* 
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+
+bool menuDeleteByAll
+    (
+    void
+    )
+    {
+        bool lReturnFlag = true;
+        if (!studentDeleteAll())
+        {
+            lReturnFlag = false;
+        }
+        return lReturnFlag;    
+    } 
+    
+/*******************************************************************************
+* 
+* menuListSearchByName - Function to search by name
+* 
+* DESCRIPTION
+* The function will search the student record based on name given by user.
+* 
+* PARAMETERS:
+* N/A
+* 
+* GLOBALS: N/A
+* 
+* RETURNS: lReturnFlag
+* 
+* ERRNO: N/A
+*
+*/
+
+bool menuListSearchByName
+    (
+    void
+    )
+    {      
+       uint8_t ucName[INPUT_BUFFER];
+       uint8_t ucIndex = ZERO_INITIALIZATION;
+       bool lReturnflag = true;
+       printf ("Enter the name:\n");
+       scanf ("%[^\n]", ucName); 
+       for ( ; ucIndex < ucStdntCnt; ucIndex++)
+       {
+            if (strcmp(ststudentInfoTable[ucIndex].ucStd_name,ucName) == 0)
+            {
+                printf("Student found\n");
+                printf ("Name: %s\n",ststudentInfoTable[ucIndex].ucStd_name);
+                printf ("Roll: %d\n",ststudentInfoTable[ucIndex].uiStd_roll);
+                printf ("Total: %d\n",ststudentInfoTable[ucIndex].ucMark_sum);
+                printf ("Avg: %f\n",ststudentInfoTable[ucIndex].ucMark_avg);
+                printf ("Rank: %d\n",ststudentInfoTable[ucIndex].ucrank);
+            }   
+       }
+       return lReturnflag; 
+    }  
