@@ -25,6 +25,7 @@ INCLUDE FILES: menu.h
 #include "student.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* defines */
 #define TASK_COUNT          (12)
@@ -79,18 +80,6 @@ menuStdntTask pstmenuStdntTask[TASK_COUNT] =
 
 
 /* forward declarations */
-bool menuMain(void);
-bool menuStudentOverview(void);
-bool menuAddStudent(void);
-bool menuListStudent(void);
-bool menuDeleteStudent(void);
-bool menuListSearchByName(void);
-bool menuListSortByName(void);
-bool menuListSortByRoll(void);
-bool menuListSortByRank(void);	
-bool menuDeleteByName(void);
-bool menuDeleteByRoll(void);
-bool menuDeleteAll(void);
 
 /*******************************************************************************
 * 
@@ -119,13 +108,17 @@ bool menuMain
         bool lReturnFlag = true;
         uint8_t ucInpNum = ZERO_INITIALIZATION;
         uint8_t ucIndex  = ZERO_INITIALIZATION;
+        uint8_t *pucendptr;
+        uint8_t ulTemp = ZERO_INITIALIZATION;
         do
         {
             printf("Student Operation List\n");
-            printf("1. Student Overview\n2. Add Student\n3. List Student\n
-                4. Delete Student\n5. Search Student by name\n6. Sort by name\n,
-                7. Sort by roll number\n8. Sort by Rank\n9. Delete by name\n
-                10. Delete by rollno.\n11. Delete All\n 12. Exit\n");
+            printf("1. Student Overview\n2. Add Student\n3. List Student\n");
+            printf(" 4. Delete Student\n5. Search Student by name\n");
+            printf("6. Sort by name\n");
+            printf("7. Sort by roll number\n8. Sort by Rank\n");   
+            printf("9. Delete by name\n");  
+            printf("10. Delete by rollno.\n11. Delete All\n 12. Exit\n");
             if( fgets (ucinpBuff, sizeof(ucinpBuff), stdin))
             {
                 uint8_t *pucendptr;
@@ -148,7 +141,7 @@ bool menuMain
                 lReturnFlag = true;
             }
             
-            if (STD_OVERVIEW <= ucInpNum <= TASK_COUNT)
+            if (STD_OVERVIEW <= ucInpNum && ucInpNum <= TASK_COUNT)
             {
                 for ( ; ucIndex < TASK_COUNT; ucIndex++)
                 {
@@ -224,13 +217,13 @@ bool menuAddStudent
     )
     {
         bool lReturnFlag = true;
-        student ststudentInfo = malloc(sizeof(student));
+        student *ststudentInfo = malloc(sizeof(student));
         printf ("Enter student name:\n");
-        if (fgets(ststudentInfo.ucStd_name, 
-            sizeof(ststudentInfo.ucStd_name), stdin) != NULL)
+        if (fgets(ststudentInfo->ucStd_name, 
+            sizeof(ststudentInfo->ucStd_name), stdin) != NULL)
             {
-                if (ststudentInfo.ucStd_name == '\n' ||
-                    ststudentInfo.ucStd_name == '\0')
+                if (ststudentInfo->ucStd_name == '\n' ||
+                    ststudentInfo->ucStd_name == '\0')
                     {
                         printf ("Enter valid name\n");
                         lReturnFlag = false;
@@ -265,7 +258,7 @@ bool menuAddStudent
             }
             else
             {
-                ststudentInfo.uiStd_roll = (uint32_t)ulTemp;
+                ststudentInfo->uiStd_roll = (uint32_t)ulTemp;
                 lReturnFlag = true;
             }
         }
@@ -273,27 +266,28 @@ bool menuAddStudent
         {
             lReturnFlag = false;
         }
-        printf ("Enter marks of each subject in the respective order\n1. English
-            \n2. Maths\n3. Physics\n4. Chemistry\n5. Malayalam\n 6. Biology\n
-            7. Histroy\n 8. Geography\n 9. Hindi\n 10. CS");
-        scanf ("%hd",ststudentInfo.menustdntMark.ucEng_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucMaths_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucPhy_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucChem_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucMal_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucBio_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucHstry_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucGeo_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucHindi_mark);
-        scanf ("%hd",ststudentInfo.menustdntMark.ucCs_mark);  
+        printf ("Enter marks of each subject in the respective order\n");
+        printf("1. English\n2. Maths\n3. Physics\n4. Chemistry\n5.Malayalam\n");
+        printf("6. Biology\n7. Histroy\n 8. Geography\n 9. Hindi\n 10. CS\n");
+        scanf ("%hd",ststudentInfo->menustdntMark.ucEng_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucMaths_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucPhy_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucChem_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucMal_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucBio_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucHstry_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucGeo_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucHindi_mark);
+        scanf ("%hd",ststudentInfo->menustdntMark.ucCs_mark);  
         printf ("Enter address\n");
         
-        studentAdd (ststudentInfo);
-        studentCalcAverage (ststudentInfo, &fAvg);
-        studentCalcSum (&ststudentInfo, &ststudentInfo.ucMark_sum);
-        studentCalcGrades (&ststudentInfo, &ststudentInfo.ucMark_sum);
+        studentAdd (&ststudentInfo);
+        studentCalcAverage (&ststudentInfo, &fAvg);
+        studentCalcSum (&ststudentInfo, &ststudentInfo->ucMark_sum);
+        studentCalcGrades (&ststudentInfo, &ststudentInfo->ucMark_sum);
         studentUpdateRank ();
         ucStdntCnt++;
+        return lReturnFlag;
     }
 
 /*******************************************************************************
@@ -361,11 +355,16 @@ bool menuDeleteStudent
     void
     )
     {
-        printf("Enter the option to delete:\n1. Delete by Name\n
-            2. Delete by Roll no:\n3. Delete all\n");
+        uint8_t ucIndex  = ZERO_INITIALIZATION;
+        uint8_t ulTemp   = ZERO_INITIALIZATION;
+        uint8_t ucInpNum = ZERO_INITIALIZATION;
+        bool lReturnFlag = true;
+        uint8_t *pucendptr;
+        printf ("Enter the option to delete:\n1. Delete by Name\n");
+        printf ("2. Delete by Roll no:\n3. Delete all\n");
         if( fgets (ucinpBuff, sizeof(ucinpBuff), stdin))
             {
-                uint8_t *pucendptr;
+                //uint8_t *pucendptr;
                 uint64_t ulTemp = strtol (ucinpBuff, &pucendptr, 10);
             }
 
@@ -385,7 +384,7 @@ bool menuDeleteStudent
                 lReturnFlag = true;
             }
             
-            if (STD_OVERVIEW <= ucInpNum <= TASK_COUNT)
+            if (STD_OVERVIEW <= ucInpNum && ucInpNum <= TASK_COUNT)
             {
                 for ( ; ucIndex < TASK_COUNT; ucIndex++)
                 {
@@ -459,7 +458,8 @@ bool menuDeleteByName
                 printf ("Unable to read input\n");
                 lReturnFlag = false;
             }
-        studentDeleteByName (ststudentInfo.ucStd_name);
+        studentDeleteByName (&ststudentInfo.ucStd_name);
+        return lReturnFlag;
         
     } 
 /*******************************************************************************
@@ -558,10 +558,10 @@ bool menuListSearchByName
             if (strcmp(ststudentInfoTable[ucIndex].ucStd_name,ucName) == 0)
             {
                 printf("Student found\n");
-                printf ("Name: %s\n",ststudentInfoTable[ucIndex].ucStd_name);
+                printf ("Name: %d\n",ststudentInfoTable[ucIndex].ucStd_name);
                 printf ("Roll: %d\n",ststudentInfoTable[ucIndex].uiStd_roll);
                 printf ("Total: %d\n",ststudentInfoTable[ucIndex].ucMark_sum);
-                printf ("Avg: %f\n",ststudentInfoTable[ucIndex].ucMark_avg);
+                printf ("Avg: %d\n",ststudentInfoTable[ucIndex].ucMark_avg);
                 printf ("Rank: %d\n",ststudentInfoTable[ucIndex].ucrank);
             }   
        }

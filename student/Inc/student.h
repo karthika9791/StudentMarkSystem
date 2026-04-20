@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* defines */
 #define ZERO_INITIALIZATION (0)
@@ -48,3 +49,31 @@ typedef struct
 
 uint8_t ucStdntCnt = ZERO_INITIALIZATION;
 student *ststudentInfoTable = NULL;
+
+
+/* forward declarations */
+bool studentAdd(student* pstInfo);
+bool studentCalcAverage(student* pstInfo, float* pfAvg);
+bool studentCalcSum(student* pstInfo, uint32_t* pulSum);
+bool studentCalcGrades(student* pstInfo, uint8_t* pucSum);
+bool studentUpdateRank(void);
+
+bool studentGetCount(uint32_t* pulCount);
+bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks);
+
+bool studentDeleteByName(uint8_t* pucName);
+bool studentDeleteByRoll(uint32_t* ulRoll);
+bool studentDeleteAll(void);
+
+bool menuMain(void);
+bool menuStudentOverview(void);
+bool menuAddStudent(void);
+bool menuListStudent(void);
+bool menuDeleteStudent(void);
+bool menuListSearchByName(void);
+bool menuListSortByName(void);
+bool menuListSortByRoll(void);
+bool menuListSortByRank(void);	
+bool menuDeleteByName(void);
+bool menuDeleteByRoll(void);
+bool menuDeleteAll(void);

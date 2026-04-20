@@ -37,18 +37,6 @@ INCLUDE FILES: student.h
 /* locals */
 
 /* forward declarations */
-bool studentAdd(student* pstInfo);
-bool studentCalcAverage(student* pstInfo, float* pfAvg);
-bool studentCalcSum(student* pstInfo, uint32_t* pulSum);
-bool studentCalcGrades(student* pstInfo, uint8_t* pucSum);
-bool studentUpdateRank(void);
-
-bool studentGetCount(uint32_t* pulCount);
-bool studentGetAvgMarksOfSubjects(uint8_t* pucAvgMarks);
-
-bool studentDeleteByName(uint8_t* pucName);
-bool studentDeleteByRoll(uint32_t* ulRoll);
-bool studentDeleteAll(void);
 
 /*******************************************************************************
 * 
