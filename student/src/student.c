@@ -263,10 +263,10 @@ bool studentUpdateRank
     void
     )
     {
-        bool lReturnFlag = true;
-        uint8_t ucInIndex = ZERO_INITIALIZATION;
+        bool lReturnFlag   = true;
+        uint8_t ucInIndex  = ZERO_INITIALIZATION;
         uint8_t ucOutIndex = ZERO_INITIALIZATION;
-        uint32_t uiRank = RANK_ONE;
+        uint32_t uiRank    = RANK_ONE;
         student stTempstudentInfo;
         for ( ; ucOutIndex < ucStdntCnt ; ucOutIndex++)
         {
@@ -360,17 +360,20 @@ bool studentDeleteByName
     uint8_t* pucName
     )
     {
-        uint8_t ucIndex  = ZERO_INITIALIZATION;
-        uint32_t uiPucNamelen = strlen(*pucName);
-        uint8_t ucDelIndex = ZERO_INITIALIZATION;
-        bool lReturnFlag = true;
+        uint8_t ucIndex       = ZERO_INITIALIZATION;
+        uint32_t uiPucNamelen = ZERO_INITIALIZATION;
+        uint8_t ucDelIndex    = ZERO_INITIALIZATION;
+        bool lReturnFlag      = true;
+        bool lNameFound       = false;
         if (pucName != NULL)
         {
+            uiPucNamelen = strlen(*pucName);
             for (; ucIndex < ucStdntCnt; ucIndex++)
             {
                 if (strncmp(ststudentInfoTable[ucIndex].ucStd_name,*pucName, 
                     uiPucNamelen))
                     {
+                        lNameFound = true;
                         for (ucDelIndex = ucIndex; ucDelIndex < ucStdntCnt; 
                             ucDelIndex++)
                         {
@@ -381,7 +384,11 @@ bool studentDeleteByName
                         break;
                     }
             }
-            
+            if (!lNameFound)
+            {
+                printf ("Name not found\n");
+                lReturnFlag = false;
+            }           
         }
         else
         {
@@ -411,15 +418,17 @@ bool studentDeleteByRoll
     uint32_t* ulRoll
     )
     {
-        uint8_t ucIndex  = ZERO_INITIALIZATION;
+        uint8_t ucIndex    = ZERO_INITIALIZATION;
         uint8_t ucDelIndex = ZERO_INITIALIZATION;
-        bool lReturnFlag = true;
+        bool lReturnFlag   = true;
+        bool lRollnoFound  = false;
         if (ulRoll != NULL)
         {
             for (; ucIndex < ucStdntCnt; ucIndex++)
             {
                 if (ststudentInfoTable[ucIndex].uiStd_roll == *ulRoll)
                 {
+                    lRollnoFound = true;
                     for ( ; ucDelIndex < (ucStdntCnt - 1); ucDelIndex++)
                     {
                         ststudentInfoTable[ucDelIndex] =
@@ -428,8 +437,13 @@ bool studentDeleteByRoll
                     ucStdntCnt--;    
                 }
                 
+            }  
+            if (!lRollnoFound)
+            {
+                printf ("Roll number not found\n");
+                lReturnFlag = false;
             }
-            
+              
         }
         else
         {

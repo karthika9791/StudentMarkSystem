@@ -26,6 +26,7 @@ INCLUDE FILES: menu.h
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 /* defines */
 #define TASK_COUNT          (12)
@@ -35,6 +36,7 @@ INCLUDE FILES: menu.h
 #define OPTION_ONE          (1)
 #define OPTION_TWO          (2)
 #define OPTION_THREE        (3)
+#define TEMP_VAR_SIZE       (10)
 
 /* typedefs */
 typedef enum
@@ -105,11 +107,12 @@ bool menuMain
     void
     )
     {
-        bool lReturnFlag = true;
-        uint8_t ucInpNum = ZERO_INITIALIZATION;
-        uint8_t ucIndex  = ZERO_INITIALIZATION;
-        uint8_t *pucendptr;
-        uint8_t ulTemp = ZERO_INITIALIZATION;
+        bool lReturnFlag   = true;
+        uint8_t ucInpNum   = ZERO_INITIALIZATION;
+        uint8_t ucIndex    = ZERO_INITIALIZATION;
+        uint8_t *pucendptr = NULL;
+        uint8_t ulTemp     = ZERO_INITIALIZATION;
+        errno              = ZERO_INITIALIZATION;
         do
         {
             printf("Student Operation List\n");
@@ -121,8 +124,7 @@ bool menuMain
             printf("10. Delete by rollno.\n11. Delete All\n 12. Exit\n");
             if( fgets (ucinpBuff, sizeof(ucinpBuff), stdin))
             {
-                uint8_t *pucendptr;
-                uint64_t ulTemp = strtol (ucinpBuff, &pucendptr, 10);
+                uint64_t ulTemp = strtol (ucinpBuff, &pucendptr, TEMP_VAR_SIZE);
             }
 
             if (pucendptr == ucinpBuff)
@@ -130,7 +132,7 @@ bool menuMain
                 printf ("Not a valid input\n");
                 lReturnFlag = false;
             }
-            else if (ulTemp < CHAR_MIN || ulTemp > CHAR_MAX)
+            else if (errno == ERANGE ||ulTemp < CHAR_MIN || ulTemp > CHAR_MAX)
             {
                 printf ("NUmber out of range\n");
                 lReturnFlag = false;
@@ -185,10 +187,24 @@ bool menuStudentOverview
     )
     {
         bool lReturnflag = true;
-        studentGetCount(&ucStdntCnt);
-        printf("No: of students = %d\n",ucStdntCnt);
-        studentGetAvgMarksOfSubjects(&fAvg);
-        printf("Average = %d\n",fAvg);
+        if (studentGetCount(&ucStdntCnt) == true)
+        {
+            printf("No: of students = %d\n",ucStdntCnt);
+        }
+        else
+        {
+            printf("Get count function is not working\n");
+            lReturnflag = false;
+        }
+        if (studentGetAvgMarksOfSubjects(&fAvg) == true)
+        {
+            printf("Average = %d\n",fAvg);
+        }
+        else
+        {
+            printf("Get average mark of subject function is not working\n");
+            lReturnflag = false;
+        }    
         return lReturnflag;
     }
 
@@ -314,21 +330,58 @@ bool menuListStudent
     )
     {
         uint8_t ucIndex  = ZERO_INITIALIZATION;
-        if (ucStdntCnt == ZERO_INITIALIZATION)
-        {
-            printf("No student data entered\n");
-        }
-        else if (ucStdntCnt > ZERO_INITIALIZATION)
-        {
-            for (ucIndex  = ZERO_INITIALIZATION; ucIndex<ucStdntCnt; ucIndex++) 
+        uint8_t ulTemp   = ZERO_INITIALIZATION;
+        uint8_t ucInpNum = ZERO_INITIALIZATION;
+        bool lReturnFlag = true;
+        uint8_t *pucendptr;
+        printf ("Enter the option to sort:\n1. Search by Name\n");
+        printf ("2. Sort by Roll no:\n3. SOrt by rank\n");
+        if( fgets (ucinpBuff, sizeof(ucinpBuff), stdin))
             {
-                printf("%s",ststudentInfoTable[ucIndex].ucStd_name);
+                uint64_t ulTemp = strtol (ucinpBuff, &pucendptr, 10);
             }
-        }
-        else
-        {
-            printf("Invalid operation\n");
-        }
+
+            if (pucendptr == ucinpBuff)
+            {
+                printf ("Not a valid input\n");
+                lReturnFlag = false;
+            }
+            else if (ulTemp < CHAR_MIN || ulTemp > CHAR_MAX)
+            {
+                printf ("NUmber out of range\n");
+                lReturnFlag = false;
+            }
+            else
+            {
+                ucInpNum = (uint8_t)ulTemp;
+                lReturnFlag = true;
+            }
+            
+            if (STD_OVERVIEW <= ucInpNum && ucInpNum <= TASK_COUNT)
+            {
+                for ( ; ucIndex < TASK_COUNT; ucIndex++)
+                {
+                    switch (ucInpNum)
+                    {
+                    case OPTION_ONE:
+                        menuListSearchByName();
+                        break;
+                    case OPTION_TWO:
+                        menuListSortByRoll();
+                        break;
+                    case OPTION_THREE:
+                        menuListSortByRank();
+                        break;
+                    default:
+                        printf("Not a valid input\n");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                lReturnFlag = false;
+            }
     }   
     
 /*******************************************************************************
@@ -451,7 +504,6 @@ bool menuDeleteByName
                     {
                         lReturnFlag = true;
                     }
-        
             }
         else
             {
