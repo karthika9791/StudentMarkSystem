@@ -64,20 +64,20 @@ typedef struct
 uint8_t fAvg;
 
 /* locals */
-uint8_t ucinpBuff[INPUT_BUFFER];
+char ucinpBuff[INPUT_BUFFER];
 menuStdntTask pstmenuStdntTask[TASK_COUNT] = 
     {
-        {STD_OVERVIEW, (bool *)menuStudentOverview},
-        {STD_ADD, (bool *)menuAddStudent},
-        {STD_LIST, (bool *)menuListStudent},
-        {STD_DELETE, (bool *)menuDeleteStudent},
-        {STD_SRCH_NAME, (bool *)menuListSearchByName},
-        {STD_SRT_NAME, (bool *)menuListSortByName},
-        {STD_SRT_ROLL, (bool *)menuListSortByRoll},
-        {STD_SRT_RANK, (bool *)menuListSortByRank},
-        {STD_DLT_NAME, (bool *)menuDeleteByName},
-        {STD_DLT_ROLL, (bool *)menuDeleteByRoll},
-        {STD_DLT_ALL, (bool *)menuDeleteAll},
+        {STD_OVERVIEW, menuStudentOverview},
+        {STD_ADD, menuAddStudent},
+        {STD_LIST, menuListStudent},
+        {STD_DELETE, menuDeleteStudent},
+        {STD_SRCH_NAME,menuListSearchByName},
+        {STD_SRT_NAME, menuListSortByName},
+        {STD_SRT_ROLL, menuListSortByRoll},
+        {STD_SRT_RANK, menuListSortByRank},
+        {STD_DLT_NAME, menuDeleteByName},
+        {STD_DLT_ROLL, menuDeleteByRoll},
+        {STD_DLT_ALL, menuDeleteAll},
     };
 
 

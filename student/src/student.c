@@ -63,7 +63,7 @@ bool studentAdd
         if (pstInfo != NULL)
         {
             student *ststudentInfoTable = 
-                realloc(ststudentInfoTable,(ucStdntCnt+1)*sizeof(student));
+                calloc(ststudentInfoTable,(ucStdntCnt+1)*sizeof(student));
             if (ststudentInfoTable != NULL)
             {
                 ststudentInfoTable[ucStdntCnt].ucStd_name = pstInfo->ucStd_name;
@@ -89,6 +89,7 @@ bool studentAdd
                 ststudentInfoTable[ucStdntCnt].menustdntMark.ucCs_mark 
                     = pstInfo->menustdntMark.ucCs_mark;
             }
+            free(ststudentInfoTable);
         }
         else
         {
@@ -268,9 +269,14 @@ bool studentUpdateRank
         uint8_t ucOutIndex = ZERO_INITIALIZATION;
         uint32_t uiRank    = RANK_ONE;
         student stTempstudentInfo;
+        if (ucStdntCnt <= ZERO_INITIALIZATION)
+        {
+            lReturnFlag = false;
+        }
+        
         for ( ; ucOutIndex < ucStdntCnt ; ucOutIndex++)
         {
-            for ( ; ucInIndex < ucStdntCnt; ucInIndex)
+            for ( ; ucInIndex < ucStdntCnt; ucInIndex++)
             {
                 if (ststudentInfoTable[ucOutIndex].ucMark_sum < 
                     ststudentInfoTable[ucInIndex].ucMark_sum)
@@ -367,10 +373,10 @@ bool studentDeleteByName
         bool lNameFound       = false;
         if (pucName != NULL)
         {
-            uiPucNamelen = strlen(*pucName);
+            uiPucNamelen = strlen(pucName);
             for (; ucIndex < ucStdntCnt; ucIndex++)
             {
-                if (strncmp(ststudentInfoTable[ucIndex].ucStd_name,*pucName, 
+                if (strncmp(ststudentInfoTable[ucIndex].ucStd_name,pucName, 
                     uiPucNamelen))
                     {
                         lNameFound = true;
@@ -477,7 +483,7 @@ bool studentDeleteAll
         bool lReturnFlag = true;
         if (ststudentInfoTable != NULL)
         {
-            memset (ststudentInfoTable, 0, sizeof(ststudentInfoTable));
+            memset (ststudentInfoTable, 0, ucStdntCnt*sizeof(student));
             ucStdntCnt = ZERO_INITIALIZATION;
         }
         else
